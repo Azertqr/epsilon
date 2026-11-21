@@ -32,9 +32,10 @@ constexpr MessageTree
          MessageTree(I18n::Message::OneMinute),
          MessageTree(I18n::Message::TwoMinutes),
          MessageTree(I18n::Message::FiveMinutes)};
-constexpr MessageTree s_modelAccessibilityChildren[2] = {
+constexpr MessageTree s_modelAccessibilityChildren[3] = {
     MessageTree(I18n::Message::ContrastMode),
-    MessageTree(I18n::Message::Magnify)};
+    MessageTree(I18n::Message::Magnify),
+    MessageTree(I18n::Message::WarmFilter)};
 constexpr MessageTree s_modelFontChildren[2] = {
     MessageTree(I18n::Message::LargeFont),
     MessageTree(I18n::Message::SmallFont)};
