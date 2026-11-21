@@ -13,7 +13,6 @@ namespace Settings {
 class AccessibilityController : public GenericSubController {
  public:
   AccessibilityController(Escher::Responder* parentResponder);
-  static bool s_warmFilterEnabled;
   Escher::View* view() override { return &m_contentView; }
   bool handleEvent(Ion::Events::Event event) override;
   Escher::HighlightCell* reusableCell(int index, int type) override;
