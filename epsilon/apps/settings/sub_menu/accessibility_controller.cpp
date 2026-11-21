@@ -6,11 +6,15 @@
 #include <escher/metric.h>
 #include <escher/theme/color_picker.h>
 
+namespace Ion {
+namespace Display {
+extern bool Ion::Display::s_warmFilterEnabled;
+}
+}  // namespace Ion
+
 using namespace Escher;
 
 namespace Settings {
-
-bool AccessibilityController::s_warmFilterEnabled = false;
 
 AccessibilityController::ContentView::ContentView(SelectableListView* listView)
     : m_listView(listView), m_hintMessage(I18n::Message::MagnifyHint) {
@@ -75,7 +79,7 @@ bool AccessibilityController::handleEvent(Ion::Events::Event event) {
     prefs->setAllowFocus(!prefs->allowFocus());
   } else {
     assert(index == k_warmFilterRow);
-    s_warmFilterEnabled = !s_warmFilterEnabled;
+    Ion::Display::s_warmFilterEnabled = !Ion::Display::s_warmFilterEnabled;
     AppsContainer::sharedAppsContainer()->redrawWindow(true);
   }
   m_selectableListView.reloadSelectedCell();
@@ -107,7 +111,7 @@ void AccessibilityController::fillCellForRow(HighlightCell* cell, int row) {
   } else if (row == k_magnifyRow) {
     state = SharedGlobalPrefs().allowFocus();
   } else {
-    state = s_warmFilterEnabled;
+    state = Ion::Display::s_warmFilterEnabled;
   }
   switchCell->accessory()->setState(state);
 }
