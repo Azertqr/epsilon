@@ -8,7 +8,7 @@
 
 namespace Ion {
 namespace Display {
-extern bool Ion::Display::s_warmFilterEnabled;
+extern bool s_warmFilterEnabled;
 }
 }  // namespace Ion
 
