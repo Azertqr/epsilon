@@ -16,5 +16,5 @@ jobs:
         run: make -j4 -C epsilon PLATFORM=n0120 userland.A.dfu userland.B.dfu
       - uses: actions/upload-artifact@v4
         with:
-          name: epsilon-n0110
+          name: epsilon-n0120
           path: epsilon/output/release/n0120/*.dfu
