@@ -24,6 +24,28 @@ KDPoint s_focusOrigin = KDPointZero;
  * hardware pixels. 1 means no zoom (focus covers the full screen). */
 uint8_t s_zoomFactor = 1;
 
+bool s_warmFilterEnabled = false;
+
+static KDColor WarmFilter(KDColor c) {
+  uint16_t v = static_cast<uint16_t>(c);
+  uint16_t r = v & 0xF800;
+  uint16_t g = v & 0x07E0;
+  uint16_t b = v & 0x001F;
+  if (g > (52 << 5)) g = 52 << 5;
+  if (b > 14) b = 14;
+  return KDColor::RGB16(r | g | b);
+}
+
+static void PushRectFiltered(KDRect r, const KDColor* pixels) {
+  KDColor row[Width];
+  for (int j = 0; j < r.height(); j++) {
+    for (int i = 0; i < r.width(); i++) {
+      row[i] = WarmFilter(pixels[j * r.width() + i]);
+    }
+    pushRectNoFocus(KDRect(r.x(), r.y() + j, r.width(), 1), row);
+  }
+}
+
 /* Focus helpers */
 
 /* Returns the sub-rectangle of software space that is currently visible on
@@ -88,7 +110,9 @@ void resetFocus() { setFocus(1, KDPointZero); }
 
 void pushRect(KDRect r, const KDColor* pixels) {
   if (!IsZoomed()) {
-    // No focus active: software space == hardware space, forward directly.
+    if (s_warmFilterEnabled) {
+      return PushRectFiltered(r, pixels);
+    }
     return pushRectNoFocus(r, pixels);
   }
   /* Clip the caller's software-space rect to the region visible on the
@@ -102,6 +126,7 @@ void pushRect(KDRect r, const KDColor* pixels) {
   for (int j = jStart; j < jStart + visibleRect.height(); j++) {
     for (int i = iStart; i < iStart + visibleRect.width(); i++) {
       KDColor color = pixels[j * r.width() + i];
+      if (s_warmFilterEnabled) color = WarmFilter(color);
       // Convert the 1×1 software pixel to its hardware-space block.
       KDRect hardwarePixelRect =
           ToHardwareRect(KDRect(i + r.x(), j + r.y(), 1, 1));
@@ -111,6 +136,7 @@ void pushRect(KDRect r, const KDColor* pixels) {
 }
 
 void pushRectUniform(KDRect r, KDColor c) {
+  if (s_warmFilterEnabled) c = WarmFilter(c);
   if (!IsZoomed()) {
     // No focus active: software space == hardware space, forward directly.
     return pushRectUniformNoFocus(r, c);
