@@ -1,4 +1,4 @@
-name: Build N0110
+name: Build N0120
 on: workflow_dispatch
 jobs:
   build:
@@ -13,8 +13,8 @@ jobs:
             libpng-dev libjpeg-dev libfreetype-dev
           pip install --break-system-packages lz4 pypng pyelftools stringcase
       - name: Compilation
-        run: make -j4 -C epsilon PLATFORM=n0110 userland.A.dfu userland.B.dfu
+        run: make -j4 -C epsilon PLATFORM=n0120 userland.A.dfu userland.B.dfu
       - uses: actions/upload-artifact@v4
         with:
           name: epsilon-n0110
-          path: epsilon/output/release/n0110/*.dfu
+          path: epsilon/output/release/n0120/*.dfu
