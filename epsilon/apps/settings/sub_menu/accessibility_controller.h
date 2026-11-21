@@ -13,6 +13,7 @@ namespace Settings {
 class AccessibilityController : public GenericSubController {
  public:
   AccessibilityController(Escher::Responder* parentResponder);
+  static bool s_warmFilterEnabled;
   Escher::View* view() override { return &m_contentView; }
   bool handleEvent(Ion::Events::Event event) override;
   Escher::HighlightCell* reusableCell(int index, int type) override;
@@ -21,9 +22,10 @@ class AccessibilityController : public GenericSubController {
   KDCoordinate nonMemoizedRowHeight(int row) override;
 
  private:
-  constexpr static int k_totalNumberOfCell = 2;
+  constexpr static int k_totalNumberOfCell = 3;
   constexpr static int k_contrastRow = 0;
   constexpr static int k_magnifyRow = 1;
+  constexpr static int k_warmFilterRow = 2;
 
   using SwitchCell =
       Escher::MenuCell<Escher::MessageTextView, Escher::EmptyCellWidget,
