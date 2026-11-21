@@ -10,6 +10,8 @@ using namespace Escher;
 
 namespace Settings {
 
+bool AccessibilityController::s_warmFilterEnabled = false;
+
 AccessibilityController::ContentView::ContentView(SelectableListView* listView)
     : m_listView(listView), m_hintMessage(I18n::Message::MagnifyHint) {
   m_hintMessage.setBackgroundColor(ThemeComponent::WallScreen);
@@ -69,9 +71,12 @@ bool AccessibilityController::handleEvent(Ion::Events::Event event) {
                         ? Escher::Theme::Light
                         : Escher::Theme::Dark);
     AppsContainer::sharedAppsContainer()->redrawWindow(true);
-  } else {
-    assert(index == k_magnifyRow);
+  } else if (index == k_magnifyRow) {
     prefs->setAllowFocus(!prefs->allowFocus());
+  } else {
+    assert(index == k_warmFilterRow);
+    s_warmFilterEnabled = !s_warmFilterEnabled;
+    AppsContainer::sharedAppsContainer()->redrawWindow(true);
   }
   m_selectableListView.reloadSelectedCell();
   return true;
@@ -96,9 +101,14 @@ void AccessibilityController::fillCellForRow(HighlightCell* cell, int row) {
   SwitchCell* switchCell = static_cast<SwitchCell*>(cell);
   switchCell->label()->setMessage(
       m_messageTreeModel->childAtIndex(row)->label());
-  bool state = (row == k_contrastRow)
-                   ? (SharedGlobalPrefs().theme() == Escher::Theme::Dark)
-                   : SharedGlobalPrefs().allowFocus();
+  bool state;
+  if (row == k_contrastRow) {
+    state = SharedGlobalPrefs().theme() == Escher::Theme::Dark;
+  } else if (row == k_magnifyRow) {
+    state = SharedGlobalPrefs().allowFocus();
+  } else {
+    state = s_warmFilterEnabled;
+  }
   switchCell->accessory()->setState(state);
 }
 
